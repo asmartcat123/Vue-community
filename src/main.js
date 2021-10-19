@@ -7,13 +7,39 @@ import router from './router'
 import axios from 'axios'
 import VueResource from 'vue-resource'
 import vuex from 'vuex'
+import store from "@/store/store";
+import VueLazyload from 'vue-lazyload'
+import Vant from 'vant'
 Vue.prototype.$http=axios
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(vuex);
 Vue.use(Router);
 Vue.use(VueResource);
+Vue.use(VueLazyload);
+Vue.use(Vant);
+
+
+router.beforeEach((to,from,next)=>{
+  //const role=window.sessionStorage.getItem('usercode');
+  const confirm=window.sessionStorage.getItem('isLogin');
+  if(to.path==='/login'){
+    next();
+  }
+  if (confirm==null){
+      if(to.path!=="/register") {
+        next("/login");
+      }
+  }
+
+  next()
+
+
+})
+
+
 new Vue({
   render: h => h(App),
   router,
+  store
 }).$mount('#app')

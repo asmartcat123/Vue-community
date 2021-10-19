@@ -1,28 +1,36 @@
 <template>
 <div>
   <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="login-box">
+    <div class="avator-box">
     <img src="../assets/logo.png">
-    <h1>欢迎登录</h1>
+    </div>
+    <h1>{{ title }}</h1>
   <el-form-item label="用户名" prop="username">
-    <el-input v-model="form.username" ></el-input>
+    <el-input v-model="form.username" name="username" ></el-input>
   </el-form-item>
     <el-form-item label="密码" prop="password">
-      <el-input v-model="form.password"></el-input>
+      <el-input v-model="form.password" name="password" type="password"></el-input>
     </el-form-item>
     <el-form-item>
     <el-button type="primary" @click="onSubmit('form')">登录</el-button>
+      <el-button type="primary" @click="Register()">注册</el-button>
     <el-button  @click="resetForm('form')">重置</el-button>
     </el-form-item>
   </el-form>
 </div>
 </template>
 
+
+
 <script>
+
 export default {
   name: "Login",
+  title:'欢迎登陆',
   data() {
 
     return {
+      title:'欢迎登录',
       form: {
         username: '',
         password:''
@@ -38,18 +46,25 @@ export default {
 
     }
   },
+  mounted() {
+
+  },
 
   methods: {
+    Register(){
+      this.$router.push("/register");
+    },
     onSubmit(formName) {
-      this.$refs[formName].validate( (valid) => {
+      this.$refs[formName].validate( async valid => {
         if (valid) {
-           const result=this.$http.post(' http://localhost:8080/json/test.json');
-            this.$router.push("/main");
-            console.log(result);
-
-
-
-
+          const {data:res}= await this.$http.post("http://localhost:8081/getUser",this.form);
+          console.log(res)
+          if(res.status!=200) return this.$message.error("登录失败");
+          window.sessionStorage.setItem('isLogin',res.token);
+          await this.$store.dispatch('asynacsetUser', {username: res.data.username,usercode:res.data.usercode});
+          window.sessionStorage.setItem('usercode',this.$store.getters.getUser.usercode);
+          await this.$router.push("/main");
+          this.$message.success("登录成功");
         } else {
           console.log('error submit!!');
           return false;
@@ -65,16 +80,29 @@ export default {
 
 <style scoped>
 img{
-  width: 50px;
-  position: absolute;
-  transform: translate(-50%,-100%);
+  width: 100%;
+  height:100%;
+  border-radius:50% ;
+  background-color: #fff;
 
+}
+.avator-box{
+  position: relative;
+  top: -60px;
+  left: 50%;
+  transform: translate(-50%,0%);
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 0 10px #ddd;
+  border: 1px solid #eee;
+  border-radius: 50%;
 }
 .login-box{
   width: 400px;
-  margin: 300px auto;
+  margin: 250px auto;
   padding: 40px;
   border: 1px solid #DCDEF6;
+
 }
 
 </style>

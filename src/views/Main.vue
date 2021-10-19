@@ -1,78 +1,56 @@
 <template>
 <div>
-  <el-container style="height: 500px; border: 1px solid #eee">
+
+  <el-container style="height:100%; width: 100%;position: fixed; border: 1px solid #eee">
     <el-aside width="200px" class="el-aside" style="background-color: rgb(238, 241, 246)">
       <el-menu :default-openeds="['1', '3']">
+
         <el-submenu index="1">
-          <template slot="title"><i class="el-icon-message"></i>导航一</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="1-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="1-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-          </el-submenu>
+          <template  slot="title"><i class="el-icon-s-platform"></i>端游</template>
+            <el-menu-item v-for="(game,index) in PCGame" :key="index"><router-link @click.native="jump(game.path)" to="">{{game.title}}</router-link></el-menu-item>
+
         </el-submenu>
+
         <el-submenu index="2">
-          <template slot="title"><i class="el-icon-menu"></i>导航二</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="2-1">选项1</el-menu-item>
-            <el-menu-item index="2-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="2-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="2-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="2-4-1">选项4-1</el-menu-item>
-          </el-submenu>
+          <template slot="title"><i class="el-icon-mobile-phone"></i>手游</template>
+          <el-menu-item v-for="(game,index) in MBGame" :key="index" ><router-link  @click.native="jump(game.path,game)" to="">{{game.game}}</router-link></el-menu-item>
         </el-submenu>
+
         <el-submenu index="3">
-          <template slot="title"><i class="el-icon-setting"></i>导航三</template>
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="3-1">选项1</el-menu-item>
-            <el-menu-item index="3-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="3-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="3-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-          </el-submenu>
+          <template slot="title"><i class="el-icon-setting"></i>ACG</template>
+            <el-menu-item  v-for="(game,index) in ACG" :key="index"  ><router-link  @click.native="jump(game.path,game)" to="">{{game.game}}</router-link></el-menu-item>
         </el-submenu>
+
+        <el-menu-item >
+          <i class="el-icon-chat-line-square"></i>
+          <span slot="title"><router-link to="/friend">聊天室</router-link></span>
+        </el-menu-item>
+
+
       </el-menu>
     </el-aside>
 
-    <el-container>
-      <el-header style="text-align: right; font-size: 12px">
-        <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 15px"></i>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>查看</el-dropdown-item>
-            <el-dropdown-item>新增</el-dropdown-item>
-            <el-dropdown-item>删除</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <span>王小虎</span>
+       <el-container>
+
+      <el-header  >
+       欢迎{{this.$store.getters.getUser.username}}
+        <el-button style="text-align: right;font-size: 12px; position: relative; left: 45%; top:-5px "  @click="logout" type="info">退出</el-button>
       </el-header>
 
+     <el-tabs  type="card" v-model="editableTabsValue"  closable   @tab-click="tabClick" @tab-remove="removeTab" >
+           <el-tab-pane id="tab"
+               v-for="(item) in editableTabs"
+               :key="item.name"
+               :label="item.title"
+               :name="item.name"
+               :ref="item.ref"
+           >
+           </el-tab-pane>
+
+         </el-tabs>
+
       <el-main>
-        <el-table :data="tableData">
-          <el-table-column prop="date" label="日期" width="140">
-          </el-table-column>
-          <el-table-column prop="name" label="姓名" width="120">
-          </el-table-column>
-          <el-table-column prop="address" label="地址">
-          </el-table-column>
-        </el-table>
+        <router-view></router-view>
       </el-main>
     </el-container>
 
@@ -81,9 +59,186 @@
 </template>
 
 <script>
+
+
 export default {
-  name: "Main"
+  name: "Main",
+  data (){
+    return{
+      editableTabsValue: '0',
+      tabIndex: 0,
+      editableTabs: [],
+      index:[],
+      Pc:[],
+      PCGame:[
+        {
+          title:'CF',
+          name:'1',
+          game:'CF',
+          path:'/cf'
+        },
+        {
+          title:'DNF',
+          name:'2',
+          game:'DNF',
+          path: '/dnf',
+        },
+        {
+          title:'LOL',
+          name:'3',
+          game:'LOL',
+          path: '/lol'
+        }
+      ],
+      MBGame:[
+        {
+          title:'原神',
+          name:'4',
+          game:'原神',
+          path:'/yuanshen'
+        },
+        {
+          title:'崩坏三',
+          name:'5',
+          game:'崩坏三',
+          path:'/impact'
+        },
+        {
+          title:'王者荣耀',
+          name:'6',
+          game:'王者荣耀',
+          path:'/wangzherongyao'
+        }
+      ],
+      ACG:[
+        {
+          title:'音乐',
+          name:'7',
+          game:'音乐',
+          path:'/music'
+        },
+        {
+          title:'手办',
+          name:'8',
+          game: '手办',
+          path:'/shouban'
+        },
+        {
+          title:'动漫',
+          name:'9',
+          game: '动漫',
+          path:'/dongman'
+        }
+      ],
+
+    }
+  },
+
+  created() {
+      this.getPc();
+  },
+  watch:{
+    '$route':function (to){
+      //新增页面
+      // 获得路由元数据的name和组件名
+      let flag=true
+      let path=to.path;
+      const thisName = to.name
+      if(this.editableTabs.length==0&&path!="/main") {
+        this.addTab(path, thisName)
+      }
+       else {
+        for (let i = 0; i < this.$refs.tabs.length; i++) {
+            if (this.$refs.tabs[i].label == to.name) {
+              this.editableTabsValue=this.$refs.tabs[i].name
+              this.$router.push(path);
+              flag=false
+              break
+            }
+        }
+
+        if(flag){
+          if(thisName!="Main") {
+            this.addTab(path, thisName)
+          }
+        }
+
+      }
+
+    },
+    editableTabs:function (){
+      if(this.editableTabs.length==0)
+        this.$router.push("/main");
+    }
+
+  },
+  methods:{
+   async getPc(){
+     const {data:res}=await this.$http.post("http://localhost:8081/getPc");
+     this.Pc=res;
+
+    },
+
+    addTab(path,thisName){
+      let newActiveIndex = ++this.tabIndex + ''
+      //动态双向追加tabs
+      this.editableTabs.push({
+        title: thisName,
+        path:path,
+        name: newActiveIndex,
+        ref: 'tabs',
+      })
+      this.editableTabsValue = newActiveIndex
+
+    },
+    tabClick(thisTab){
+
+      let val = this.editableTabs.filter(item => thisTab.name == item.name)
+      let path=val[0].path
+      this.$router.push(path);
+    },
+
+    removeTab(targetName){
+      let tabs = this.editableTabs;
+      let activeName = this.editableTabsValue;
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            let nextTab = tabs[index + 1] || tabs[index - 1];
+            if (nextTab) {
+              activeName = nextTab.name;
+              this.$router.push(nextTab.path);
+            }
+          }
+
+        });
+      }
+
+
+      this.editableTabsValue = activeName;
+      this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+
+
+
+    },
+
+    jump(path){
+      this.$router.push(path);
+
+    },
+
+    logout(){
+      window.sessionStorage.clear();
+      this.$router.push('/login');
+    },
+
+  },
+
+
 }
+
+
+
 </script>
 
 <style scoped>
@@ -95,7 +250,14 @@ export default {
 
 .el-aside {
   color: #333;
+  height: 100%;
   overflow: visible;
 }
+body,html{
+  height: 100%;
+  height:100%
+}
+
+
 
 </style>
