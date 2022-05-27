@@ -1,25 +1,17 @@
-var http = require('http');
 
-// 用于请求的选项
-var options = {
-    host: 'localhost',
-    port: '8080',
-    path: '/test.html'
-};
+import Vue from "vue";
+const bus=new Vue();
 
-// 处理响应的回调函数
-var callback = function(response){
-    // 不断更新数据
-    var body = '';
-    response.on('data', function(data) {
-        body += data;
-    });
-
-    response.on('end', function() {
-        // 数据接收完成
-        console.log(body);
-    });
+export default bus;
+export let state =Vue.observable( {
+    name: '张三',
+    age: 38
+})
+export let mutations = {
+    changeName(name) {
+        state.name = name
+    },
+    setAge(age) {
+        state.age = age
+    }
 }
-// 向服务端发送请求
-var req = http.request(options, callback);
-req.end();

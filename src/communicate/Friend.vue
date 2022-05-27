@@ -62,6 +62,7 @@ export default {
       if(!msg.trim().length){
         return;
       }
+
       this.ws.send(JSON.stringify({
         msg:msg,
         username:this.username

@@ -111,16 +111,15 @@ export default {
 
   },
   mounted() {
-
     this.init()
     this.getSong()
-
-
+  },
+  created() {
 
   },
   methods: {
     async getSong(){
-      const {data:res}=await this.$http.get("https://api.hibai.cn/music/index/music?id=36271441&type=url");
+      const {data:res}=await this.$http.get("https://api.imjad.cn/cloudmusic/?type=song&id=1851752489&br=128000");
       console.log(res);
 
     },
