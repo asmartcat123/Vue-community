@@ -23,10 +23,6 @@ export default {
   },
   methods:{
     async getOption(){
-<<<<<<< HEAD
-=======
-      
->>>>>>> 718aa485aafbd82c85c6a22e3a836ded12e1d075
       const {data:res}=await this.$http.post("http://localhost:8081/getOption");
       if(option.yAxis.data.length==0) {
         res.forEach(item => {
