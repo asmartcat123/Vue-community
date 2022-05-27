@@ -1,40 +1,44 @@
 <template>
 <div>
 
+
   <el-container style="height:100%; width: 100%;position: fixed; border: 1px solid #eee">
     <el-aside width="200px" class="el-aside" style="background-color: rgb(238, 241, 246)">
-      <el-menu :default-openeds="['1', '3']">
+      <el-menu :default-openeds="['1', '3']" >
 
-        <el-submenu index="1">
-          <template  slot="title"><i class="el-icon-s-platform"></i>端游</template>
-            <el-menu-item v-for="(game,index) in PCGame" :key="index"><router-link @click.native="jump(game.path)" to="">{{game.title}}</router-link></el-menu-item>
-
+        <el-submenu  v-for="(father,index) in Menu" :key="index" :index="father.index">
+          <template  slot="title"><i :class="father.ficon"></i>{{father.fname}}</template>
+            <el-menu-item  v-for="(game,index) in father.son" :key="index"><router-link @click.native="jump(game.path,game)" to="">{{game.game}}</router-link></el-menu-item>
         </el-submenu>
 
-        <el-submenu index="2">
-          <template slot="title"><i class="el-icon-mobile-phone"></i>手游</template>
-          <el-menu-item v-for="(game,index) in MBGame" :key="index" ><router-link  @click.native="jump(game.path,game)" to="">{{game.game}}</router-link></el-menu-item>
-        </el-submenu>
-
-        <el-submenu index="3">
-          <template slot="title"><i class="el-icon-setting"></i>ACG</template>
-            <el-menu-item  v-for="(game,index) in ACG" :key="index"  ><router-link  @click.native="jump(game.path,game)" to="">{{game.game}}</router-link></el-menu-item>
-        </el-submenu>
 
         <el-menu-item >
           <i class="el-icon-chat-line-square"></i>
           <span slot="title"><router-link to="/friend">聊天室</router-link></span>
         </el-menu-item>
 
+        <el-menu-item >
+          <i  class="el-icon-user"></i>
+          <span slot="title"><router-link to="/task">信息处理</router-link></span>
+        </el-menu-item>
 
       </el-menu>
     </el-aside>
 
        <el-container>
+      <el-header >
+        <el-image  class="headimg" :src="himage"></el-image>
+        <el-dropdown size="small" trigger="click" style="position: relative;right:-45%" placement="top"  @command="handleCommand">
+      <span  class="el-dropdown-link">
+        {{this.$store.getters.getUser.username}}
+        <i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="logout" icon="el-icon-plus">退出登录</el-dropdown-item>
+            <el-dropdown-item command="return" icon="el-icon-plus">返回首页</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
 
-      <el-header  >
-       欢迎{{this.$store.getters.getUser.username}}
-        <el-button style="text-align: right;font-size: 12px; position: relative; left: 45%; top:-5px "  @click="logout" type="info">退出</el-button>
       </el-header>
 
      <el-tabs  type="card" v-model="editableTabsValue"  closable   @tab-click="tabClick" @tab-remove="removeTab" >
@@ -50,6 +54,7 @@
          </el-tabs>
 
       <el-main>
+        <Message v-if="flag"></Message>
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -59,91 +64,46 @@
 </template>
 
 <script>
+import Message from './Message'
 
 
 export default {
   name: "Main",
+  components: {
+     Message
+  },
   data (){
     return{
       editableTabsValue: '0',
       tabIndex: 0,
       editableTabs: [],
       index:[],
-      Pc:[],
-      PCGame:[
-        {
-          title:'CF',
-          name:'1',
-          game:'CF',
-          path:'/cf'
-        },
-        {
-          title:'DNF',
-          name:'2',
-          game:'DNF',
-          path: '/dnf',
-        },
-        {
-          title:'LOL',
-          name:'3',
-          game:'LOL',
-          path: '/lol'
-        }
-      ],
-      MBGame:[
-        {
-          title:'原神',
-          name:'4',
-          game:'原神',
-          path:'/yuanshen'
-        },
-        {
-          title:'崩坏三',
-          name:'5',
-          game:'崩坏三',
-          path:'/impact'
-        },
-        {
-          title:'王者荣耀',
-          name:'6',
-          game:'王者荣耀',
-          path:'/wangzherongyao'
-        }
-      ],
-      ACG:[
-        {
-          title:'音乐',
-          name:'7',
-          game:'音乐',
-          path:'/music'
-        },
-        {
-          title:'手办',
-          name:'8',
-          game: '手办',
-          path:'/shouban'
-        },
-        {
-          title:'动漫',
-          name:'9',
-          game: '动漫',
-          path:'/dongman'
-        }
-      ],
-
+      Menu:[],
+      flag:true,
+      himage:''
     }
   },
 
   created() {
       this.getPc();
+      this.gethead();
+      window.addEventListener('beforeunload',this.fresh())
   },
+
   watch:{
     '$route':function (to){
       //新增页面
       // 获得路由元数据的name和组件名
-      let flag=true
+      let flag1=true
       let path=to.path;
       const thisName = to.name
+      if(path=="/main"){
+        this.flag=true;
+      }else {
+        this.flag=false;
+
+      }
+
       if(this.editableTabs.length==0&&path!="/main") {
         this.addTab(path, thisName)
       }
@@ -152,12 +112,12 @@ export default {
             if (this.$refs.tabs[i].label == to.name) {
               this.editableTabsValue=this.$refs.tabs[i].name
               this.$router.push(path);
-              flag=false
+              flag1=false
               break
             }
         }
 
-        if(flag){
+        if(flag1){
           if(thisName!="Main") {
             this.addTab(path, thisName)
           }
@@ -173,10 +133,28 @@ export default {
 
   },
   methods:{
+    async gethead(){
+      let uid=window.sessionStorage.getItem('uid');
+      const {data:res}=await this.$http.get("http://localhost:1642/api/User/gethead",{params:{uid:uid}});
+      console.log(res);
+      this.himage=res.data[0]
+    },
    async getPc(){
-     const {data:res}=await this.$http.post("http://localhost:8081/getPc");
-     this.Pc=res;
-
+     const {data:res}=await this.$http.get("http://localhost:1642/api/Shop/getMenu");
+     res.data.forEach(item=>{
+       this.Menu.push({
+         index:item.index,
+         fname:item.fname,
+         ficon:item.ficon,
+         son:item.son
+       })
+     })
+    },
+    fresh(){
+        if(this.$route.path!="/main"){
+          this.flag=false;
+          console.log(this.editableTabsValue)
+        }
     },
 
     addTab(path,thisName){
@@ -192,7 +170,6 @@ export default {
 
     },
     tabClick(thisTab){
-
       let val = this.editableTabs.filter(item => thisTab.name == item.name)
       let path=val[0].path
       this.$router.push(path);
@@ -214,11 +191,8 @@ export default {
         });
       }
 
-
       this.editableTabsValue = activeName;
       this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-
-
 
     },
 
@@ -227,17 +201,24 @@ export default {
 
     },
 
-    logout(){
-      window.sessionStorage.clear();
-      this.$router.push('/login');
+    handleCommand(command){
+     switch (command) {
+       case'logout':
+         window.sessionStorage.clear();
+         this.$router.push('/login');
+         break;
+       case'return':
+         this.$router.push('/main');
+         this.editableTabs.splice(0,this.editableTabs.length);
+
+     }
+
     },
 
   },
 
 
 }
-
-
 
 </script>
 
@@ -257,7 +238,25 @@ body,html{
   height: 100%;
   height:100%
 }
+.el-dropdown-link {
+  cursor: pointer;
 
-
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+.demonstration {
+  display: block;
+  color: #8492a6;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.headimg{
+  position: absolute;
+  left:90%;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
 
 </style>

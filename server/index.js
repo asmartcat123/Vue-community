@@ -26,7 +26,7 @@ const Ws=require('ws');
    }
 
    function handleError(){
-      console.log('error');
+     console.log('error');
    }
 
    function handleConnection(ws){
@@ -36,7 +36,6 @@ const Ws=require('ws');
    }
 
    function handleMessage(msg){
-
       const data=JSON.parse(msg);
       var message={
          msg:data.msg,
@@ -51,5 +50,4 @@ const Ws=require('ws');
 
    init()
 })(Ws);
-
 

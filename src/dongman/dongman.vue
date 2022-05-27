@@ -62,7 +62,7 @@ export default {
   },
   methods:{
     async loadDate(){
-      const {data:res}=await this.$http.post('http://api.tianapi.com/dongman/index?key=00b51f9a8a5109c78059e0b71fa053f0',);
+      const {data:res}=await this.$http.get('http://api.tianapi.com/dongman/index?key=00b51f9a8a5109c78059e0b71fa053f0',);
       const data=res.newslist;
       data.forEach((data)=>{
        this.data.push({

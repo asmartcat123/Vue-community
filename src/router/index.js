@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from 'vue-router';
-
+import Test from '../../test/test.vue'
 import Login from "@/views/Login";
 import Main from '../views/Main'
 import DNF from "@/components/DNF";
@@ -9,14 +9,16 @@ import LOL from "@/components/LOL";
 import impact from "@/acg/impact";
 import dongman from "../dongman/dongman"
 import Friend from "@/communicate/Friend";
-import Error from "@/views/Error";
 import Register from "@/views/Register";
 import music from "@/dongman/music";
+import task from  "@/communicate/Task"
+
 Vue.use(Router)
 
 export default new Router({
     mode:'history',
     routes:[
+        {path:'/test',name:'Test',component:Test},
         {
           path:'',
           redirect:'/login'
@@ -33,15 +35,6 @@ export default new Router({
             path:"/register",
             name:"Register",
             component:Register
-        },
-        {
-            path:'/error',
-            name:'error',
-            component:Error,
-            meta:{
-                roles:['user']
-            }
-
         },
         {
             path:'/main',
@@ -98,12 +91,18 @@ export default new Router({
                 },
                 {
                     path:'/friend',
-                    name:'friend',
+                    name:'聊天室',
                     component:Friend,
                     meta:{
                         roles:['admin']
                     },
-                }
+                },
+                {
+                    path:'/task',
+                    name:'任务选项',
+                    component:task
+                },
+
             ]
         },
 

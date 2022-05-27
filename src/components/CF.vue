@@ -97,8 +97,9 @@ export default {
   },
   methods:{
     async getweapon(){
-     const {data:res}=await this.$http.post("http://localhost:8081/getWeapon");
-     res.forEach(item=>{
+     const {data:res}=await this.$http.get("http://localhost:1642/api/Shop/getweapon");
+     console.log(res.data);
+     res.data.forEach(item=>{
        this.weapon.push({
          sname:item.wname,
          simage:item.wimage,
@@ -119,14 +120,14 @@ export default {
 
     },
    async add(game){
-     const {data:res}=await this.$http.post("http://localhost:8081/buyWeapon",game);
-     if(res.status!=200) return this.$message.error("购买失败");
+     const {data:res}=await this.$http.post("http://localhost:1642/api/Shop/buyweapon",game);
+     if(res.code!=200) return this.$message.error("购买失败");
      this.$message.success("购买成功");
 
     },
     handleDelete(index, row) {
       const sid=row.sid
-      this.$http.delete("http://localhost:8081/deleteShop",{params:{sid:sid}});
+      this.$http.delete("http://localhost:1642/api/Shop/deleteshop",{params:{sid:sid}});
       this.list.splice(index,1);
 
       if(this.list.slice((this.currentPage-1)*this.pagesize,this.currentPage*this.pagesize).length==0){
@@ -134,9 +135,9 @@ export default {
       }
     },
    async check(){
-      const {data:res}=await this.$http.get("http://localhost:8081/getShop");
+      const {data:res}=await this.$http.get("http://localhost:1642/api/Shop/getshop");
       console.log(res);
-      this.list=res;
+      this.list=res.data;
       this.handleCurrentChange(1);
       this.dialogFormVisible=true
     },

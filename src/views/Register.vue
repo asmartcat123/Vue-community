@@ -92,9 +92,9 @@ export default {
   },
   methods: {
    async register(){
-     const{data:res}=await this.$http.post("http://localhost:8081/registerUser",this.form)
+     const{data:res}=await this.$http.post("http://localhost:1642/api/User/registeruser",this.form)
      console.log(res);
-     if(res.status!=200) return this.$message.error("注册失败");
+     if(res.code!=200) return this.$message.error("验证码已过期");
      await this.$router.push("/login");
      this.$message.success("注册成功");
 
@@ -103,7 +103,7 @@ export default {
      if(this.canClick){
        this.canClick=false;
        this.content=this.totalTime+'s后重新发送';
-       await this.$http.get("http://localhost:8081/checkps", {params:{email:this.form.email}});
+       await this.$http.get("http://localhost:1642/api/User/checkps", {params:{email:this.form.email,username:this.form.username}});
        this.timer=setInterval(()=>{
          this.totalTime--;
          this.content=this.totalTime+"s后重新发送";
@@ -122,24 +122,33 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate( async valid => {
         if (valid) {
-          this.dialogFormVisible=true;
-         if(!this.canClick)return
-          this.canClick=false;
-          this.content=this.totalTime+'s后重新发送';
-          await this.$http.get("http://localhost:8081/checkps", {params:{email:this.form.email}});
-          this.timer=setInterval(()=>{
-            this.totalTime--;
-            this.content=this.totalTime+"s后重新发送";
-            if(this.totalTime<0){
-              clearInterval(this.timer);
-              this.content="重新发送验证码";
-              this.totalTime=60;
-              this.canClick=true;
+          const{data:res}=await this.$http.get("http://localhost:1642/api/User/checkuser", {params:{username:this.form.username}});
+          if(res.code==404){
+            return this.$message.error("用户名已存在");
+          }
+         else {
+            this.dialogFormVisible = true;
+            if (!this.canClick) return
+            this.canClick = false;
+            this.content = this.totalTime + 's后重新发送';
+            await this.$http.get("http://localhost:1642/api/User/checkps", {
+              params: {
+                email: this.form.email,
+                username: this.form.username
+              }
+            });
+            this.timer = setInterval(() => {
+              this.totalTime--;
+              this.content = this.totalTime + "s后重新发送";
+              if (this.totalTime < 0) {
+                clearInterval(this.timer);
+                this.content = "重新发送验证码";
+                this.totalTime = 60;
+                this.canClick = true;
 
-            }
-          },1000)
-
-
+              }
+            }, 1000)
+          }
         }else {
           console.log('error submit!!');
           return false;

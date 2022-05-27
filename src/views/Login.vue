@@ -17,6 +17,8 @@
     <el-button  @click="resetForm('form')">重置</el-button>
     </el-form-item>
   </el-form>
+
+
 </div>
 </template>
 
@@ -55,14 +57,18 @@ export default {
       this.$router.push("/register");
     },
     onSubmit(formName) {
+      //
+
       this.$refs[formName].validate( async valid => {
         if (valid) {
-          const {data:res}= await this.$http.post("http://localhost:8081/getUser",this.form);
-          console.log(res)
-          if(res.status!=200) return this.$message.error("登录失败");
+          const {data:res}= await this.$http.post("http://localhost:1642/api/User/checkuser",this.form);
+          console.log(res);
+          console.log(123);
+          if(res.code!=200) return this.$message.error("登录失败");
           window.sessionStorage.setItem('isLogin',res.token);
-          await this.$store.dispatch('asynacsetUser', {username: res.data.username,usercode:res.data.usercode});
+          await this.$store.dispatch('asynacsetUser', {username: res.data[0].username,usercode:res.data[0].usercode});
           window.sessionStorage.setItem('usercode',this.$store.getters.getUser.usercode);
+          window.sessionStorage.setItem('uid',res.data[0].uid);
           await this.$router.push("/main");
           this.$message.success("登录成功");
         } else {
