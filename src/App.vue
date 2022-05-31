@@ -12,7 +12,8 @@ export default {
   data(){
     return{
       innerWidth:window.innerWidth,
-      widths:window.screen.width
+      widths:window.screen.width,
+
     }
   },
   components: {
@@ -23,7 +24,7 @@ export default {
          return(()=>{
            that.innerWidth=window.innerWidth;
            that.widths=window.screen.width;
-         })()
+         }) ()
        }
       window.addEventListener('unload',this.saveState);
   },

@@ -31,7 +31,7 @@ export default {
           this.option.series[1].data.push(item.nowNum);
         })
       }
-      var myChart = echarts.init(document.getElementById('main'));
+      let myChart = echarts.init(document.getElementById('main'));
       myChart.setOption(this.option);
 
     }
@@ -42,3 +42,4 @@ export default {
 <style scoped>
 
 </style>
+
